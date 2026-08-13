@@ -1,0 +1,63 @@
+¿Por qué no he usado herencia? y he hecho diferentes 
+clases cada una con su responsabilidad?
+
+No he usado ninguna librería de grafos, he usado nodos 
+con sus propias conexiones(lista de adyacencia distribuida)
+
+por qué uso sys.maxsize sin límite real en start/end y no None
+
+por qué max_link_capacity default 1, y no algo máximo si no lo pone, porque realmente puede haber capacidad cualquiera.
+
+Me gustaría poner en el readme algo como una biblioteca de los colores usados etc o añadir más colores como minimo los que están en los ejemplos de los mapas: cyan, orange, purple, red, brown, lime, magenta, black, maroon, gold, darkred, violet, rainbow, crimsom, 
+
+por ejemplo, en medium 01, la zona dead end no la toca, por qué?
+
+igual que en la easy 03 la start no la toca tampoco...
+
+codigo en vivo:
+
+en el main.py:
+
+capacity_info = "--capacity-info" in sys.argv
+if capacity_info:
+    sys.argv.remove("--capacity-info")
+
+if len(sys.argv) < 2:
+    print("Usage: python3 main.py [--capacity-info] <map_file>")
+    return
+
+map_path = sys.argv[1]
+
+
+en simulation.py:
+
+def run(self, capacity_info: bool = False) -> None:
+    """Run the simulation turn by turn until all drones are delivered."""
+    while len(self.delivered) < len(self.drones):
+        self.current_turn += 1
+        if self.current_turn > 1000:
+            raise ValueError("Simulation did not converge within 1000 turns")
+        self.release_connections()
+        self.run_turn()
+        self.complete_transits()
+
+        if capacity_info:
+            self.print_capacity_info()
+
+crear esta def para que printee la capacity info:
+
+def print_capacity_info(self) -> None:
+    """Print current zone/connection capacity usage for this turn."""
+    print(f"--- Turn {self.current_turn} capacity ---")
+    for zone, count in self.zone_occupancy.items():
+        if count > 0:
+            print(f"Zone {zone.name}: {count}/{zone.max_drones} drones")
+    for connection, count in self.connection_occupancy.items():
+        if count > 0:
+            print(f"Connection {connection.name}: "
+                  f"{count}/{connection.max_link_capacity} capacity used")
+
+añadir en main:
+
+simulation.run(capacity_info=capacity_info)
+
